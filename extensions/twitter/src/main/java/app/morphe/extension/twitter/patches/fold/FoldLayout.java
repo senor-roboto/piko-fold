@@ -20,6 +20,7 @@ public final class FoldLayout implements Application.ActivityLifecycleCallbacks 
         FoldLayout.application = application;
         registered = true;
         application.registerActivityLifecycleCallbacks(new FoldLayout());
+        FoldEmbedding.initialize(application);
     }
 
     public static float tabletInset(Resources resources, int dimension) {
@@ -75,7 +76,10 @@ public final class FoldLayout implements Application.ActivityLifecycleCallbacks 
     }
 
     @Override public void onActivityCreated(Activity activity, Bundle state) { install(activity); }
-    @Override public void onActivityResumed(Activity activity) { install(activity); }
+    @Override public void onActivityResumed(Activity activity) {
+        FoldEmbedding.refresh();
+        install(activity);
+    }
     @Override public void onActivityStarted(Activity activity) {}
     @Override public void onActivityPaused(Activity activity) {}
     @Override public void onActivityStopped(Activity activity) {}

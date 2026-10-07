@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowInsets;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -34,11 +35,17 @@ public class FoldShell extends FrameLayout {
     private boolean enabled;
     private boolean railEnabled;
     private boolean active;
+    private boolean embedded;
+    private boolean railClaimed;
+    private final boolean mainScreen;
+    private int railTop;
+    private int railBottom;
     private int readingWidth;
 
     public FoldShell(Activity activity) {
         super(activity);
         this.activity = activity;
+        mainScreen = activity.getClass().getName().equals("com.twitter.app.main.MainActivity");
         preferences = activity.getSharedPreferences("piko_settings", Context.MODE_PRIVATE);
         pane = new FrameLayout(activity);
         addView(pane, new LayoutParams(-1, -1));
@@ -48,9 +55,9 @@ public class FoldShell extends FrameLayout {
         buttons = new LinearLayout(activity);
         buttons.setOrientation(LinearLayout.VERTICAL);
         buttons.setGravity(Gravity.CENTER_HORIZONTAL);
-        buttons.setPadding(dp(4), dp(12), dp(4), dp(12));
+        buttons.setPadding(dp(4), 0, dp(4), dp(8));
         rail.addView(buttons, new ScrollView.LayoutParams(-1, -2));
-        addView(rail, new LayoutParams(dp(80), -1));
+        addView(rail, new LayoutParams(dp(64), -1));
         rail.setVisibility(GONE);
         refreshPreferences();
     }
@@ -99,11 +106,13 @@ public class FoldShell extends FrameLayout {
     }
 
     @Override protected void onMeasure(int widthSpec, int heightSpec) {
-        active = enabled && targetWindow();
+        embedded = FoldEmbedding.isEmbedded(activity);
+        active = enabled && (targetWindow() || embedded);
         if (!active || !railEnabled) restoreTabs();
         boolean showRail = active && railEnabled && collapsed;
         int width = MeasureSpec.getSize(widthSpec), height = MeasureSpec.getSize(heightSpec);
-        int railWidth = showRail ? dp(80) : 0;
+        // The slot remains constant while native bottom bars animate or switch visibility.
+        int railWidth = active && railEnabled && (mainScreen || railClaimed) ? dp(64) : 0;
         int available = Math.max(0, width - getPaddingLeft() - getPaddingRight() - railWidth);
         int paneWidth = active
                 ? Math.min(available, dp(FoldGeometry.readingWidth(
@@ -113,15 +122,16 @@ public class FoldShell extends FrameLayout {
                 MeasureSpec.makeMeasureSpec(Math.max(0, height - getPaddingTop() - getPaddingBottom()),
                         MeasureSpec.EXACTLY));
         rail.setVisibility(showRail ? VISIBLE : GONE);
+        updateRailInsets(height);
         if (showRail) rail.measure(MeasureSpec.makeMeasureSpec(railWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(Math.max(0, height - getPaddingTop() - getPaddingBottom()),
+                MeasureSpec.makeMeasureSpec(Math.max(0, height - railTop - railBottom),
                         MeasureSpec.EXACTLY));
         setMeasuredDimension(resolveSize(width, widthSpec), resolveSize(height, heightSpec));
     }
 
     @Override protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         boolean rtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
-        int railWidth = rail.getVisibility() == VISIBLE ? rail.getMeasuredWidth() : 0;
+        int railWidth = active && railEnabled && (mainScreen || railClaimed) ? dp(64) : 0;
         int start = getPaddingLeft() + (rtl ? 0 : railWidth);
         int available = getWidth() - getPaddingLeft() - getPaddingRight() - railWidth;
         int paneLeft = start + Math.max(0, (available - pane.getMeasuredWidth()) / 2);
@@ -129,9 +139,37 @@ public class FoldShell extends FrameLayout {
                 getPaddingTop() + pane.getMeasuredHeight());
         if (railWidth > 0) {
             int railLeft = rtl ? getWidth() - getPaddingRight() - railWidth : getPaddingLeft();
-            rail.layout(railLeft, getPaddingTop(), railLeft + railWidth,
-                    getPaddingTop() + rail.getMeasuredHeight());
+            rail.layout(railLeft, railTop, railLeft + railWidth,
+                    railTop + rail.getMeasuredHeight());
         }
+    }
+
+    @SuppressLint("NewApi")
+    private void updateRailInsets(int height) {
+        int top = 0, bottom = 0;
+        WindowInsets insets = getRootWindowInsets();
+        if (insets != null) {
+            if (Build.VERSION.SDK_INT >= 30) {
+                android.graphics.Insets bars = insets.getInsetsIgnoringVisibility(
+                        WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+                top = bars.top;
+                bottom = bars.bottom;
+            } else {
+                top = insets.getSystemWindowInsetTop();
+                bottom = insets.getStableInsetBottom();
+            }
+        }
+        // Subtract space already excluded by the Activity decor; keep native pane insets intact.
+        int[] position = new int[2];
+        getLocationOnScreen(position);
+        int windowBottom = getResources().getDisplayMetrics().heightPixels;
+        if (Build.VERSION.SDK_INT >= 30) {
+            Rect bounds = activity.getWindowManager().getCurrentWindowMetrics().getBounds();
+            top += bounds.top;
+            windowBottom = bounds.bottom;
+        }
+        railTop = getPaddingTop() + Math.max(0, top - position[1]) + dp(8);
+        railBottom = getPaddingBottom() + Math.max(0, position[1] + height - (windowBottom - bottom));
     }
 
     protected View namedView(String name) {
@@ -143,11 +181,11 @@ public class FoldShell extends FrameLayout {
         if (!active || !railEnabled) return;
         View candidate = namedView("tabs");
         View container = namedView("tabsContainer");
-        if (!(candidate instanceof ViewGroup) || container == null
-                || candidate.getVisibility() != VISIBLE || container.getVisibility() != VISIBLE) {
-            restoreTabs();
+        if (!(candidate instanceof ViewGroup) || container == null) {
+            // Keep the previous rail during a transient native view replacement.
             return;
         }
+        if (!collapsed && (candidate.getVisibility() != VISIBLE || container.getVisibility() != VISIBLE)) return;
         ViewGroup group = (ViewGroup) candidate;
         if (group.getChildCount() != 1 || !(group.getChildAt(0) instanceof ViewGroup)) {
             restoreTabs();
@@ -180,7 +218,7 @@ public class FoldShell extends FrameLayout {
                 View source = strip.getChildAt(i);
                 buttons.addView(new NativeTabButton(activity, source, () -> {
                     post(this::syncTabs);
-                }), new LinearLayout.LayoutParams(-1, dp(64)));
+                }), new LinearLayout.LayoutParams(-1, dp(56)));
             }
         }
         if (!collapsed) {
@@ -196,7 +234,14 @@ public class FoldShell extends FrameLayout {
             container.setLayoutParams(containerParams);
             container.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
             collapsed = true;
+            railClaimed = true;
             requestLayout();
+        }
+        // Some native transitions write the bottom container height back; never animate the slot.
+        if (container.getLayoutParams().height != 0) {
+            ViewGroup.LayoutParams params = container.getLayoutParams();
+            params.height = 0;
+            container.setLayoutParams(params);
         }
         for (int i = 0; i < buttons.getChildCount(); i++) {
             ((NativeTabButton) buttons.getChildAt(i)).sync();

@@ -159,6 +159,13 @@ public class ScreenBuilder {
                 str("piko_fold_enabled_desc"), Settings.FOLD_ENABLED));
         addPreference(category, helper.switchPreference(str("piko_fold_rail"),
                 str("piko_fold_rail_desc"), Settings.FOLD_RAIL));
+        addPreference(category, helper.switchPreference(str("piko_fold_two_panes"),
+                str("piko_fold_two_panes_desc") + "\n"
+                        + str(app.morphe.extension.twitter.patches.fold.FoldEmbedding.isAvailable()
+                                ? "piko_fold_panels_available" : "piko_fold_panels_unavailable")
+                        + " " + String.format(str("piko_fold_window_width"),
+                                context.getResources().getConfiguration().screenWidthDp),
+                Settings.FOLD_TWO_PANES));
         addPreference(category, helper.editTextNumPreference(str("piko_fold_width"),
                 str("piko_fold_width_desc"), Settings.FOLD_READING_WIDTH));
     }

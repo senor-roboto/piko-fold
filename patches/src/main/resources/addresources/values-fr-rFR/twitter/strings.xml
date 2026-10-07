@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="piko_title_fold">Fold paysage 4:3</string>
+    <string name="piko_fold_enabled">Activer la disposition Fold</string>
+    <string name="piko_fold_enabled_desc">Adapter les écrans dans une grande fenêtre 4:3 en paysage. Le portrait et les petites fenêtres conservent leur disposition. Relancer X après une modification.</string>
+    <string name="piko_fold_rail">Navigation latérale</string>
+    <string name="piko_fold_rail_desc">Afficher les onglets natifs dans un rail latéral compact.</string>
+    <string name="piko_fold_two_panes">Navigation native à deux panneaux</string>
+    <string name="piko_fold_two_panes_desc">Conserver le fil ou le profil à gauche et ouvrir le post à droite. Nécessite un système compatible et une fenêtre 4:3 en paysage large d’au moins 768 dp. Relancer X après une modification.</string>
+    <string name="piko_fold_panels_available">Prise en charge des deux panneaux détectée.</string>
+    <string name="piko_fold_panels_unavailable">Deux panneaux indisponibles sur ce système : affichage à une colonne.</string>
+    <string name="piko_fold_window_width">Fenêtre actuelle : %1$d dp de large.</string>
+    <string name="piko_fold_width">Largeur de lecture (dp)</string>
+    <string name="piko_fold_width_desc">Largeur maximale de la colonne unique. 640 par défaut, de 480 à 840. Modification appliquée au retour à l’écran.</string>
     <!-- Settings Search -->
     <string name="piko_settings_search_hint">Rechercher des paramètres de Piko</string>
     <string name="piko_settings_search_clear">Effacer la saisie</string>

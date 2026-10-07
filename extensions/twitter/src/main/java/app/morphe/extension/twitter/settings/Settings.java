@@ -18,6 +18,7 @@ public class Settings {
 
     public static final BooleanSetting FOLD_ENABLED = new BooleanSetting("fold_enabled", true);
     public static final BooleanSetting FOLD_RAIL = new BooleanSetting("fold_rail", true);
+    public static final BooleanSetting FOLD_TWO_PANES = new BooleanSetting("fold_two_panes", true);
     public static final StringSetting FOLD_READING_WIDTH = new StringSetting("fold_reading_width", "640");
     public static final String FOLD_SECTION = "fold_section";
 

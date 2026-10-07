@@ -98,6 +98,19 @@ public class FoldLayoutTest {
         buttons.getChildAt(1).performClick();
         assertEquals(1, clicked.get());
         assertEquals("Native tab 1", buttons.getChildAt(1).getContentDescription());
+        int stableLeft = container.getLeft() + ((View) container.getParent()).getLeft();
+        int stableWidth = container.getWidth();
+        container.setVisibility(View.GONE); // Native notification -> DM transition hides this briefly.
+        shell.getViewTreeObserver().dispatchOnGlobalLayout();
+        layout(shell, 960, 720);
+        assertEquals(View.VISIBLE, shell.getChildAt(1).getVisibility());
+        assertEquals(stableLeft, container.getLeft() + ((View) container.getParent()).getLeft());
+        container.setVisibility(View.VISIBLE);
+        container.getLayoutParams().height = 48; // Native animator writes its old height back.
+        shell.getViewTreeObserver().dispatchOnGlobalLayout();
+        layout(shell, 960, 720);
+        assertEquals(0, container.getLayoutParams().height);
+        assertEquals(stableWidth, container.getWidth());
         activity.getSharedPreferences("piko_settings", 0).edit().putBoolean("fold_rail", false).commit();
         shell.refreshPreferences();
         layout(shell, 960, 720);
@@ -126,5 +139,27 @@ public class FoldLayoutTest {
         // Keyboard resize must not turn a 4:3 window into a non-target wide viewport.
         layout(shell, 960, 400);
         assertEquals(640, original.getWidth());
+    }
+
+    @Test public void splitRulesKeepBothPanesUsableAndRejectOtherFormats() {
+        assertTrue(FoldEmbedding.supportsTwoPanes(768, 576));
+        assertTrue(FoldEmbedding.supportsTwoPanes(767.99f, 576));
+        assertTrue(FoldEmbedding.supportsTwoPanes(960, 720));
+        assertFalse(FoldEmbedding.supportsTwoPanes(720, 540));
+        assertFalse(FoldEmbedding.supportsTwoPanes(576, 768));
+        assertFalse(FoldEmbedding.supportsTwoPanes(1280, 720));
+        assertTrue(FoldEmbedding.matchesPair("com.twitter.app.main.MainActivity",
+                "com.twitter.tweetdetail.TweetDetailActivity"));
+        assertTrue(FoldEmbedding.matchesPair("com.twitter.app.dm.RootDMActivity",
+                "com.twitter.app.dm.DMActivity"));
+        assertFalse(FoldEmbedding.matchesPair("com.twitter.tweetdetail.TweetDetailActivity",
+                "com.twitter.app.main.MainActivity"));
+        assertFalse(FoldEmbedding.matchesPair("com.twitter.app.main.MainActivity",
+                "com.twitter.composer.ComposerActivity"));
+        assertTrue(FoldEmbedding.shouldExpand("com.twitter.composer.ComposerActivity"));
+        assertFalse(FoldEmbedding.shouldExpand("com.twitter.app.main.MainActivity"));
+        assertFalse(FoldEmbedding.shouldExpand("com.twitter.tweetdetail.TweetDetailActivity"));
+        assertFalse(FoldEmbedding.shouldExpand(""));
+        assertFalse(FoldEmbedding.isEmbedded(activity())); // No vendor component on this runtime.
     }
 }
