@@ -135,3 +135,6 @@ bin/
 /local.properties
 
 .direnv
+/.test-fold/
+*.apkm
+*.mpp

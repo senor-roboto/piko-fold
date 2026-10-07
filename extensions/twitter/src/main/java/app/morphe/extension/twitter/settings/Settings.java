@@ -16,6 +16,11 @@ public class Settings {
 
     public static final BooleanSetting PIKO_DEBUG = new BooleanSetting("piko_debug", false);
 
+    public static final BooleanSetting FOLD_ENABLED = new BooleanSetting("fold_enabled", true);
+    public static final BooleanSetting FOLD_RAIL = new BooleanSetting("fold_rail", true);
+    public static final StringSetting FOLD_READING_WIDTH = new StringSetting("fold_reading_width", "640");
+    public static final String FOLD_SECTION = "fold_section";
+
     public static final StringSetting VID_PUBLIC_FOLDER = new StringSetting("vid_public_folder", "Movies");
     public static final StringSetting VID_SUBFOLDER = new StringSetting("vid_subfolder", "Twitter");
     public static final StringSetting VID_MEDIA_HANDLE = new StringSetting("vid_media_handle", "download_media");

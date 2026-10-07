@@ -28,6 +28,14 @@ import app.morphe.extension.twitter.Pref;
 public class ScreenBuilder {
     private static final SettingsSection[] SETTINGS_SECTIONS = new SettingsSection[]{
             new SettingsSection(
+                    "piko_title_fold",
+                    null,
+                    Settings.FOLD_SECTION,
+                    "ic_vector_timeline_stroke",
+                    () -> SettingsStatus.foldLayout,
+                    ScreenBuilder::buildFoldSection
+            ),
+            new SettingsSection(
                     "piko_title_premium",
                     null,
                     Settings.PREMIUM_SECTION,
@@ -141,6 +149,18 @@ public class ScreenBuilder {
     }
     private void addPreference(@Nullable LegacyTwitterPreferenceCategory category,Preference pref){
         preferenceTarget.addPreference(category, pref);
+    }
+
+    public void buildFoldSection(boolean buildCategory) {
+        if (!SettingsStatus.foldLayout) return;
+        LegacyTwitterPreferenceCategory category = buildCategory
+                ? preferenceCategory(str("piko_title_fold")) : null;
+        addPreference(category, helper.switchPreference(str("piko_fold_enabled"),
+                str("piko_fold_enabled_desc"), Settings.FOLD_ENABLED));
+        addPreference(category, helper.switchPreference(str("piko_fold_rail"),
+                str("piko_fold_rail_desc"), Settings.FOLD_RAIL));
+        addPreference(category, helper.editTextNumPreference(str("piko_fold_width"),
+                str("piko_fold_width_desc"), Settings.FOLD_READING_WIDTH));
     }
 
     public void buildPremiumSection(boolean buildCategory){

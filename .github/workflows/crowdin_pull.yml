@@ -6,6 +6,7 @@ on:
 
 jobs:
   pull:
+    if: github.repository == 'crimera/piko'
     name: Pull translations from Crowdin
     permissions:
       contents: write
@@ -34,7 +35,7 @@ jobs:
 
   merge:
     name: Squash merge Crowdin into Dev
-    if: github.event_name == 'workflow_dispatch'
+    if: github.repository == 'crimera/piko' && github.event_name == 'workflow_dispatch'
     needs: pull
     permissions:
       contents: write
