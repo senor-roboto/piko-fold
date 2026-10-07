@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="piko_title_fold">Fold landscape 4:3</string>
+    <string name="piko_fold_enabled">Enable Fold layout</string>
+    <string name="piko_fold_enabled_desc">Adapt browsing screens only in a large landscape 4:3 window. Portrait, cover screen and narrow windows keep the original layout. Applied when returning to the screen.</string>
+    <string name="piko_fold_rail">Side navigation</string>
+    <string name="piko_fold_rail_desc">Move the native navigation controls to a side rail when available.</string>
+    <string name="piko_fold_width">Reading column width (dp)</string>
+    <string name="piko_fold_width_desc">Maximum width for feeds, profiles and conversations. Default 640; range 480–840. Applied when returning to the screen.</string>
     <!-- Settings Search -->
     <string name="piko_settings_search_hint">Search Piko settings</string>
     <string name="piko_settings_search_clear">Clear input</string>

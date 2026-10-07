@@ -446,4 +446,9 @@ public class SettingsStatus {
 
     public static void load() {
     }
+
+    public static boolean foldLayout = false;
+    public static void foldLayout() {
+        foldLayout = true;
+    }
 }

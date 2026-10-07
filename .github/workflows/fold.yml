@@ -26,6 +26,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew buildAndroid --no-daemon
+      - name: Verify Fold geometry
+        run: |
+          mkdir -p .test-fold
+          javac -d .test-fold extensions/twitter/src/main/java/app/morphe/extension/twitter/patches/fold/FoldGeometry.java tests/FoldGeometryTest.java
+          java -cp .test-fold FoldGeometryTest
+      - name: Verify native Android layout
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew :extensions:twitter:testReleaseUnitTest --no-daemon
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fold-test-results
+          path: extensions/twitter/build/reports/tests/
       - uses: actions/upload-artifact@v4
         with:
           name: piko-fold-bundle
