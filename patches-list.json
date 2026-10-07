@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "3.9.1",
+  "version": "3.10.0",
   "patches": [
     {
       "name": "Add ability to copy media link",
@@ -1874,11 +1874,12 @@
     },
     {
       "name": "Fold landscape 4:3 layout",
-      "description": "Adds native side navigation and adjustable reading width on large landscape 4:3 windows. Adapts feeds, profiles, search, post details, bookmarks and legacy messages; portrait stays unchanged.",
+      "description": "Adds stable side navigation, adjustable reading width and native two-panel browsing on supported devices in large landscape 4:3 windows. Portrait stays unchanged.",
       "default": false,
       "dependencies": [
         "BytecodePatch",
         "BytecodePatch",
+        "ResourcePatch",
         "ResourcePatch"
       ],
       "compatiblePackages": [
