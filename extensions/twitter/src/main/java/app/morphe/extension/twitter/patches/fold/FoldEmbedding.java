@@ -38,7 +38,7 @@ public final class FoldEmbedding {
             Class<?> api = Class.forName("androidx.window.extensions.embedding.ActivityEmbeddingComponent");
             setRules = api.getMethod("setEmbeddingRules", Set.class);
             isEmbedded = api.getMethod("isActivityEmbedded", Activity.class);
-            rules = buildRules(app.getResources().getDisplayMetrics().density);
+            rules = buildRules();
             refresh();
         } catch (ReflectiveOperationException | LinkageError | RuntimeException error) {
             component = null;
@@ -46,13 +46,14 @@ public final class FoldEmbedding {
         }
     }
 
-    private static Set<Object> buildRules(float density) throws ReflectiveOperationException {
+    private static Set<Object> buildRules() throws ReflectiveOperationException {
         Predicate<Pair<Activity, Activity>> pair = value -> matchesPair(
                 value.first.getClass().getName(), value.second.getClass().getName());
         Predicate<Pair<Activity, Intent>> intentPair = value -> matchesPair(
                 value.first.getClass().getName(), componentName(value.second));
         Predicate<WindowMetrics> metrics = value -> {
             Rect bounds = value.getBounds();
+            float density = application.getResources().getDisplayMetrics().density;
             return supportsTwoPanes(bounds.width() / density, bounds.height() / density);
         };
         Class<?> pairBuilder = Class.forName("androidx.window.extensions.embedding.SplitPairRule$Builder");
@@ -62,10 +63,11 @@ public final class FoldEmbedding {
         pairBuilder.getMethod("setFinishPrimaryWithSecondary", int.class).invoke(builder, 0); // NEVER
         pairBuilder.getMethod("setFinishSecondaryWithPrimary", int.class).invoke(builder, 1); // ALWAYS
         pairBuilder.getMethod("setShouldClearTop", boolean.class).invoke(builder, true);
+        addNativeDivider(pairBuilder, builder);
         Set<Object> result = new HashSet<>();
         result.add(pairBuilder.getMethod("build").invoke(builder));
 
-        // Camera, media, composer, settings and returning Home must fill the whole window.
+        // Camera, media, composer and settings must fill the whole window.
         Class<?> expandBuilder = Class.forName("androidx.window.extensions.embedding.ActivityRule$Builder");
         Predicate<Activity> expandActivity = value -> shouldExpand(value.getClass().getName());
         Predicate<Intent> expandIntent = value -> shouldExpand(componentName(value));
@@ -76,6 +78,34 @@ public final class FoldEmbedding {
         return result;
     }
 
+    private static void addNativeDivider(Class<?> pairBuilder, Object builder) {
+        try {
+            // Vendor API 6+: the system owns drag gestures, focus, resizing and back navigation.
+            Class<?> dividerBuilder = Class.forName("androidx.window.extensions.embedding.DividerAttributes$Builder");
+            Class<?> dividerApi = Class.forName("androidx.window.extensions.embedding.DividerAttributes");
+            Object divider = dividerBuilder.getConstructor(int.class).newInstance(2); // DRAGGABLE
+            dividerBuilder.getMethod("setWidthDp", int.class).invoke(divider, 4);
+            dividerBuilder.getMethod("setPrimaryMinRatio", float.class).invoke(divider, 0.5f);
+            dividerBuilder.getMethod("setPrimaryMaxRatio", float.class).invoke(divider, 0.58f);
+            dividerBuilder.getMethod("setDividerColor", int.class).invoke(divider, 0xff646464);
+            try {
+                dividerBuilder.getMethod("setDraggingToFullscreenAllowed", boolean.class).invoke(divider, true);
+            } catch (NoSuchMethodException ignored) {} // Vendor API 7+ only.
+            Object dividerAttributes = dividerBuilder.getMethod("build").invoke(divider);
+            Object rule = pairBuilder.getMethod("build").invoke(builder);
+            Class<?> splitRule = Class.forName("androidx.window.extensions.embedding.SplitRule");
+            Object original = splitRule.getMethod("getDefaultSplitAttributes").invoke(rule);
+            Class<?> attributes = Class.forName("androidx.window.extensions.embedding.SplitAttributes");
+            Class<?> attributeBuilder = Class.forName("androidx.window.extensions.embedding.SplitAttributes$Builder");
+            Object adjusted = attributeBuilder.getConstructor(attributes).newInstance(original);
+            attributeBuilder.getMethod("setDividerAttributes", dividerApi).invoke(adjusted, dividerAttributes);
+            pairBuilder.getMethod("setDefaultSplitAttributes", attributes)
+                    .invoke(builder, attributeBuilder.getMethod("build").invoke(adjusted));
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            // Older OEM implementations keep the working fixed 50:50 split.
+        }
+    }
+
     private static String componentName(Intent intent) {
         ComponentName name = intent.getComponent();
         return name == null ? "" : name.getClassName();
@@ -83,7 +113,7 @@ public final class FoldEmbedding {
 
     static boolean supportsTwoPanes(float width, float height) {
         // 384 dp for each Activity: a 64 dp master rail still leaves 320 dp for its feed.
-        return width >= 768 && FoldGeometry.isTarget(width, height);
+        return Math.round(width) >= 768 && FoldGeometry.isTarget(width, height);
     }
 
     static boolean matchesPair(String primary, String secondary) {
@@ -102,8 +132,7 @@ public final class FoldEmbedding {
 
     static boolean shouldExpand(String name) {
         // Ignore implicit external intents until their actual target Activity is known.
-        return !name.isEmpty() && (name.equals("com.twitter.app.main.MainActivity")
-                || name.equals("com.twitter.app.settings.SettingsRootCompatActivity")
+        return !name.isEmpty() && (name.equals("com.twitter.app.settings.SettingsRootCompatActivity")
                 || !FoldLayout.isBrowsingActivity(name));
     }
 

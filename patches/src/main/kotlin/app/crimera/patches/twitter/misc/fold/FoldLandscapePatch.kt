@@ -38,8 +38,8 @@ private object TabletListInsetFingerprint : Fingerprint(
 @Suppress("unused")
 val foldLandscapePatch = bytecodePatch(
     name = "Fold landscape 4:3 layout",
-    description = "Adds native side navigation and adjustable reading width on large landscape 4:3 windows. " +
-        "Adapts feeds, profiles, search, post details, bookmarks and legacy messages; portrait stays unchanged.",
+    description = "Adds stable side navigation, adjustable reading width and native two-panel browsing " +
+        "on supported devices in large landscape 4:3 windows. Portrait stays unchanged.",
     default = false,
 ) {
     compatibleWith(COMPATIBILITY_X)

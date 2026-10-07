@@ -143,6 +143,7 @@ public class FoldLayoutTest {
 
     @Test public void splitRulesKeepBothPanesUsableAndRejectOtherFormats() {
         assertTrue(FoldEmbedding.supportsTwoPanes(768, 576));
+        assertTrue(FoldEmbedding.supportsTwoPanes(767.99f, 576));
         assertTrue(FoldEmbedding.supportsTwoPanes(960, 720));
         assertFalse(FoldEmbedding.supportsTwoPanes(720, 540));
         assertFalse(FoldEmbedding.supportsTwoPanes(576, 768));
@@ -156,7 +157,7 @@ public class FoldLayoutTest {
         assertFalse(FoldEmbedding.matchesPair("com.twitter.app.main.MainActivity",
                 "com.twitter.composer.ComposerActivity"));
         assertTrue(FoldEmbedding.shouldExpand("com.twitter.composer.ComposerActivity"));
-        assertTrue(FoldEmbedding.shouldExpand("com.twitter.app.main.MainActivity"));
+        assertFalse(FoldEmbedding.shouldExpand("com.twitter.app.main.MainActivity"));
         assertFalse(FoldEmbedding.shouldExpand("com.twitter.tweetdetail.TweetDetailActivity"));
         assertFalse(FoldEmbedding.shouldExpand(""));
         assertFalse(FoldEmbedding.isEmbedded(activity())); // No vendor component on this runtime.

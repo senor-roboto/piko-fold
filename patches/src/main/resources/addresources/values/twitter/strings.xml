@@ -7,6 +7,9 @@
     <string name="piko_fold_rail_desc">Move the native navigation controls to a side rail when available.</string>
     <string name="piko_fold_two_panes">Native two-panel browsing</string>
     <string name="piko_fold_two_panes_desc">Keep the feed or profile on the left when opening a post on the right. Requires device activity embedding support and a landscape 4:3 window at least 768 dp wide. Restart X after changing this setting.</string>
+    <string name="piko_fold_panels_available">Native two-panel support detected.</string>
+    <string name="piko_fold_panels_unavailable">Native two-panel support unavailable: using one column.</string>
+    <string name="piko_fold_window_width">Current window: %1$d dp wide.</string>
     <string name="piko_fold_width">Reading column width (dp)</string>
     <string name="piko_fold_width_desc">Maximum width for feeds, profiles and conversations. Default 640; range 480–840. Applied when returning to the screen.</string>
     <!-- Settings Search -->
