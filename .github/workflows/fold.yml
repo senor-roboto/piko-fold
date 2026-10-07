@@ -25,7 +25,7 @@ jobs:
       - name: Build patch bundle
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew buildAndroid --no-daemon
+        run: ./gradlew buildAndroid :patches:generatePatchesList --no-daemon
       - name: Verify Fold geometry
         run: |
           mkdir -p .test-fold
@@ -34,7 +34,7 @@ jobs:
       - name: Verify native Android layout
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew :extensions:twitter:testReleaseUnitTest --no-daemon
+        run: ./gradlew :extensions:twitter:testDebugUnitTest --no-daemon
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -45,3 +45,18 @@ jobs:
           name: piko-fold-bundle
           path: patches/build/libs/*.mpp
           if-no-files-found: error
+      - name: Prepare Morphe source
+        if: github.ref == 'refs/heads/main'
+        run: python3 .github/scripts/fold_release.py
+      - name: Publish release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version=$(sed -n 's/^version = //p' gradle.properties)
+          gh release create "v$version" patches/build/libs/*.mpp patches-bundle.json patches-list.json SHA256SUMS --target "$GITHUB_SHA" --title "Piko Fold v$version" --notes-file docs/RELEASE.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add patches-bundle.json patches-list.json
+          git commit -m "chore: update Morphe source metadata [skip ci]"
+          git push origin main

@@ -15,6 +15,7 @@ env:
 
 jobs:
   pull-request:
+    if: github.repository == 'crimera/piko'
     name: Open pull request
     runs-on: ubuntu-latest
     steps:

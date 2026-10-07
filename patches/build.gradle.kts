@@ -2,12 +2,12 @@ group = "crimera"
 
 patches {
     about {
-        name = "Piko"
-        description = "Morphe patches focused on Twitter/X"
-        source = "git@github.com:crimera/piko.git"
-        author = "crimera"
+        name = "Piko Fold"
+        description = "Piko patches with landscape 4:3 adaptation for X"
+        source = "https://github.com/senor-roboto/piko-fold"
+        author = "senor-roboto; upstream Piko by crimera"
         contact = "na"
-        website = "https://github.com/crimera/piko"
+        website = "https://github.com/senor-roboto/piko-fold"
         license = "GNU General Public License v3.0"
     }
 }

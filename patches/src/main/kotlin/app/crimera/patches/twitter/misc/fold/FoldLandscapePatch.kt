@@ -60,4 +60,3 @@ val foldLandscapePatch = bytecodePatch(
         enableSettings("foldLayout")
     }
 }
-

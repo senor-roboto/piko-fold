@@ -3,6 +3,7 @@ name: Crowdin push from GitHub
 on:
   workflow_dispatch:
   push:
+    if: github.repository == 'crimera/piko'
     branches:
       - dev
     paths:

@@ -17,7 +17,7 @@ import android.widget.ScrollView;
 import java.util.Map;
 
 /** A reversible outer layout. X still owns the original screen, fragments and tab actions. */
-public final class FoldShell extends FrameLayout {
+public class FoldShell extends FrameLayout {
     private final Activity activity;
     private final FrameLayout pane;
     private final ScrollView rail;
