@@ -5,6 +5,8 @@
     <string name="piko_fold_enabled_desc">Adapt browsing screens only in a large landscape 4:3 window. Portrait, cover screen and narrow windows keep the original layout. Restart X after changing this setting.</string>
     <string name="piko_fold_rail">Side navigation</string>
     <string name="piko_fold_rail_desc">Move the native navigation controls to a side rail when available.</string>
+    <string name="piko_fold_two_panes">Native two-panel browsing</string>
+    <string name="piko_fold_two_panes_desc">Keep the feed or profile on the left when opening a post on the right. Requires device activity embedding support and a landscape 4:3 window at least 768 dp wide. Restart X after changing this setting.</string>
     <string name="piko_fold_width">Reading column width (dp)</string>
     <string name="piko_fold_width_desc">Maximum width for feeds, profiles and conversations. Default 640; range 480–840. Applied when returning to the screen.</string>
     <!-- Settings Search -->

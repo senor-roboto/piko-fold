@@ -43,7 +43,7 @@ val foldLandscapePatch = bytecodePatch(
     default = false,
 ) {
     compatibleWith(COMPATIBILITY_X)
-    dependsOn(settingsPatch, blockRedirectingToXLitePatch, resourceMappingPatch)
+    dependsOn(settingsPatch, blockRedirectingToXLitePatch, resourceMappingPatch, foldResourcePatch)
 
     execute {
         twitterInitHook.fingerprint.method.apply {
