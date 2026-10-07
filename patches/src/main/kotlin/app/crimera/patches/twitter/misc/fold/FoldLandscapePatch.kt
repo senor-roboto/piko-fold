@@ -40,7 +40,7 @@ val foldLandscapePatch = bytecodePatch(
     name = "Fold landscape 4:3 layout",
     description = "Adds native side navigation and adjustable reading width on large landscape 4:3 windows. " +
         "Adapts feeds, profiles, search, post details, bookmarks and legacy messages; portrait stays unchanged.",
-    use = false,
+    default = false,
 ) {
     compatibleWith(COMPATIBILITY_X)
     dependsOn(settingsPatch, blockRedirectingToXLitePatch, resourceMappingPatch)
@@ -60,3 +60,4 @@ val foldLandscapePatch = bytecodePatch(
         enableSettings("foldLayout")
     }
 }
+
