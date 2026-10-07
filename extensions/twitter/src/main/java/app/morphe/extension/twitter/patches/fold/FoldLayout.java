@@ -77,11 +77,12 @@ public final class FoldLayout implements Application.ActivityLifecycleCallbacks 
 
     @Override public void onActivityCreated(Activity activity, Bundle state) { install(activity); }
     @Override public void onActivityResumed(Activity activity) {
+        FoldChat.resumed(activity);
         FoldEmbedding.refresh();
         install(activity);
     }
     @Override public void onActivityStarted(Activity activity) {}
-    @Override public void onActivityPaused(Activity activity) {}
+    @Override public void onActivityPaused(Activity activity) { FoldChat.paused(activity); }
     @Override public void onActivityStopped(Activity activity) {}
     @Override public void onActivitySaveInstanceState(Activity activity, Bundle state) {}
     @Override public void onActivityDestroyed(Activity activity) {}

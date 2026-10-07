@@ -5,10 +5,14 @@
     <string name="piko_fold_enabled_desc">Adapter les écrans dans une grande fenêtre 4:3 en paysage. Le portrait et les petites fenêtres conservent leur disposition. Relancer X après une modification.</string>
     <string name="piko_fold_rail">Navigation latérale</string>
     <string name="piko_fold_rail_desc">Afficher les onglets natifs dans un rail latéral compact.</string>
-    <string name="piko_fold_two_panes">Navigation native à deux panneaux</string>
-    <string name="piko_fold_two_panes_desc">Conserver le fil ou le profil à gauche et ouvrir le post à droite. Nécessite un système compatible et une fenêtre 4:3 en paysage large d’au moins 768 dp. Relancer X après une modification.</string>
+    <string name="piko_fold_two_panes">Messages à deux panneaux</string>
+    <string name="piko_fold_two_panes_desc">Dans la messagerie classique, conserver la liste à gauche et ouvrir la conversation à droite. Nécessite un système compatible et au moins 768 dp en paysage 4:3. XChat intégré conserve son interface native. Relancer X après une modification.</string>
+    <string name="piko_fold_tweet_panels">Post et réponses côte à côte</string>
+    <string name="piko_fold_tweet_panels_desc">Afficher le post à gauche et les réponses à droite, avec défilement indépendant et champ de réponse à droite. Nécessite au moins 768 dp en paysage 4:3.</string>
+    <string name="piko_fold_reduce_chat_motion">Réduire les mouvements de XChat</string>
+    <string name="piko_fold_reduce_chat_motion_desc">Utiliser les transitions réduites de X dans le tchat en paysage 4:3. Ce réglage cible le mouvement à l’ouverture et la navigation interne.</string>
     <string name="piko_fold_panels_available">Prise en charge des deux panneaux détectée.</string>
-    <string name="piko_fold_panels_unavailable">Deux panneaux indisponibles sur ce système : affichage à une colonne.</string>
+    <string name="piko_fold_panels_unavailable">Juxtaposition native des messages indisponible sur ce système. Les colonnes post et réponses restent indépendantes de ce support.</string>
     <string name="piko_fold_window_width">Fenêtre actuelle : %1$d dp de large.</string>
     <string name="piko_fold_width">Largeur de lecture (dp)</string>
     <string name="piko_fold_width_desc">Largeur maximale de la colonne unique. 640 par défaut, de 480 à 840. Modification appliquée au retour à l’écran.</string>

@@ -148,8 +148,10 @@ public class FoldLayoutTest {
         assertFalse(FoldEmbedding.supportsTwoPanes(720, 540));
         assertFalse(FoldEmbedding.supportsTwoPanes(576, 768));
         assertFalse(FoldEmbedding.supportsTwoPanes(1280, 720));
-        assertTrue(FoldEmbedding.matchesPair("com.twitter.app.main.MainActivity",
+        assertFalse(FoldEmbedding.matchesPair("com.twitter.app.main.MainActivity",
                 "com.twitter.tweetdetail.TweetDetailActivity"));
+        assertTrue(FoldEmbedding.matchesPair("com.twitter.app.main.MainActivity",
+                "com.twitter.app.dm.DMActivity"));
         assertTrue(FoldEmbedding.matchesPair("com.twitter.app.dm.RootDMActivity",
                 "com.twitter.app.dm.DMActivity"));
         assertFalse(FoldEmbedding.matchesPair("com.twitter.tweetdetail.TweetDetailActivity",

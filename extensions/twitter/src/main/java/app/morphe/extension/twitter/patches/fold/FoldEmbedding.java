@@ -47,9 +47,9 @@ public final class FoldEmbedding {
     }
 
     private static Set<Object> buildRules() throws ReflectiveOperationException {
-        Predicate<Pair<Activity, Activity>> pair = value -> matchesPair(
+        Predicate<Pair<Activity, Activity>> pair = value -> FoldChat.isInbox(value.first) && matchesPair(
                 value.first.getClass().getName(), value.second.getClass().getName());
-        Predicate<Pair<Activity, Intent>> intentPair = value -> matchesPair(
+        Predicate<Pair<Activity, Intent>> intentPair = value -> FoldChat.isInbox(value.first) && matchesPair(
                 value.first.getClass().getName(), componentName(value.second));
         Predicate<WindowMetrics> metrics = value -> {
             Rect bounds = value.getBounds();
@@ -85,8 +85,8 @@ public final class FoldEmbedding {
             Class<?> dividerApi = Class.forName("androidx.window.extensions.embedding.DividerAttributes");
             Object divider = dividerBuilder.getConstructor(int.class).newInstance(2); // DRAGGABLE
             dividerBuilder.getMethod("setWidthDp", int.class).invoke(divider, 4);
-            dividerBuilder.getMethod("setPrimaryMinRatio", float.class).invoke(divider, 0.5f);
-            dividerBuilder.getMethod("setPrimaryMaxRatio", float.class).invoke(divider, 0.58f);
+            dividerBuilder.getMethod("setPrimaryMinRatio", float.class).invoke(divider, 0.42f);
+            dividerBuilder.getMethod("setPrimaryMaxRatio", float.class).invoke(divider, 0.5f);
             dividerBuilder.getMethod("setDividerColor", int.class).invoke(divider, 0xff646464);
             try {
                 dividerBuilder.getMethod("setDraggingToFullscreenAllowed", boolean.class).invoke(divider, true);
@@ -112,21 +112,15 @@ public final class FoldEmbedding {
     }
 
     static boolean supportsTwoPanes(float width, float height) {
-        // 384 dp for each Activity: a 64 dp master rail still leaves 320 dp for its feed.
+        // A main-screen inbox also has a 64 dp rail; leave at least 320 dp for its list.
         return Math.round(width) >= 768 && FoldGeometry.isTarget(width, height);
     }
 
     static boolean matchesPair(String primary, String secondary) {
         if (primary.equals(secondary)) return false;
         boolean master = primary.equals("com.twitter.app.main.MainActivity")
-                || primary.equals("com.twitter.android.search.implementation.results.SearchActivity")
-                || primary.equals("com.twitter.app.profiles.ProfileActivity")
-                || primary.equals("com.twitter.app.bookmarks.legacy.BookmarkActivity")
-                || primary.equals("com.twitter.app.bookmarks.folders.BookmarkFolderActivity")
                 || primary.equals("com.twitter.app.dm.RootDMActivity");
-        boolean detail = secondary.equals("com.twitter.tweetdetail.TweetDetailActivity")
-                || secondary.equals("com.twitter.app.profiles.ProfileActivity")
-                || secondary.equals("com.twitter.app.dm.DMActivity");
+        boolean detail = secondary.equals("com.twitter.app.dm.DMActivity");
         return master && detail;
     }
 

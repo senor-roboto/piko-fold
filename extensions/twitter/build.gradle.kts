@@ -16,6 +16,7 @@ android {
 dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.17")
+    testImplementation(project(":extensions:twitter:stub"))
     compileOnly(project(":extensions:shared:library"))
     compileOnly(project(":extensions:twitter:stub"))
     compileOnly(libs.morphe.extensions.library)
