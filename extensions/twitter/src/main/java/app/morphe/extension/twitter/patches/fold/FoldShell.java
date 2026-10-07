@@ -24,7 +24,9 @@ public class FoldShell extends FrameLayout {
     private final ScrollView rail;
     private final LinearLayout buttons;
     private final SharedPreferences preferences;
-    private final ViewTreeObserver.OnGlobalLayoutListener layoutListener = this::syncTabs;
+    private final ViewTreeObserver.OnGlobalLayoutListener layoutListener = this::syncLayout;
+    private final FoldTweetPanels tweetPanels;
+    private boolean tweetPanelsEnabled;
     private ViewGroup tabs;
     private View tabsContainer;
     private ViewGroup tabStrip;
@@ -48,6 +50,8 @@ public class FoldShell extends FrameLayout {
         mainScreen = activity.getClass().getName().equals("com.twitter.app.main.MainActivity");
         preferences = activity.getSharedPreferences("piko_settings", Context.MODE_PRIVATE);
         pane = new FrameLayout(activity);
+        tweetPanels = activity.getClass().getName().equals("com.twitter.tweetdetail.TweetDetailActivity")
+                ? new FoldTweetPanels(activity, pane) : null;
         addView(pane, new LayoutParams(-1, -1));
         rail = new ScrollView(activity);
         rail.setFillViewport(false);
@@ -70,6 +74,7 @@ public class FoldShell extends FrameLayout {
         Map<String, ?> saved = preferences.getAll();
         enabled = !Boolean.FALSE.equals(saved.get("fold_enabled"));
         railEnabled = !Boolean.FALSE.equals(saved.get("fold_rail"));
+        tweetPanelsEnabled = !Boolean.FALSE.equals(saved.get("fold_tweet_panels"));
         readingWidth = 640;
         try {
             Object value = saved.get("fold_reading_width");
@@ -86,6 +91,7 @@ public class FoldShell extends FrameLayout {
     @Override protected void onDetachedFromWindow() {
         getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
         restoreTabs();
+        if (tweetPanels != null) tweetPanels.restore();
         super.onDetachedFromWindow();
     }
 
@@ -114,7 +120,7 @@ public class FoldShell extends FrameLayout {
         // The slot remains constant while native bottom bars animate or switch visibility.
         int railWidth = active && railEnabled && (mainScreen || railClaimed) ? dp(64) : 0;
         int available = Math.max(0, width - getPaddingLeft() - getPaddingRight() - railWidth);
-        int paneWidth = active
+        int paneWidth = active && (tweetPanels == null || !tweetPanels.isSplit())
                 ? Math.min(available, dp(FoldGeometry.readingWidth(
                         Math.round(available / getResources().getDisplayMetrics().density), readingWidth)))
                 : available;
@@ -175,6 +181,14 @@ public class FoldShell extends FrameLayout {
     protected View namedView(String name) {
         int id = getResources().getIdentifier(name, "id", activity.getPackageName());
         return id == 0 ? null : pane.findViewById(id);
+    }
+
+    private void syncLayout() {
+        syncTabs();
+        if (tweetPanels != null) {
+            float density = getResources().getDisplayMetrics().density;
+            tweetPanels.sync(active && tweetPanelsEnabled && Math.round(getWidth() / density) >= 768);
+        }
     }
 
     private void syncTabs() {

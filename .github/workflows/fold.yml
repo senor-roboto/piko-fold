@@ -3,7 +3,7 @@ name: Piko Fold
 on:
   workflow_dispatch:
   push:
-    branches: [main, codex/fold-landscape, codex/fold-v2]
+    branches: [main, codex/fold-landscape, codex/fold-v2, codex/fold-v3]
 
 permissions:
   contents: write

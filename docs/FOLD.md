@@ -1,100 +1,87 @@
-# Piko Fold : v2 paysage 4:3 (3.10.0)
+# Piko Fold : v3 paysage 4:3 (3.11.0)
 
-Ce fork de [Piko](https://github.com/crimera/piko) ajoute le patch facultatif
-**Fold landscape 4:3 layout** pour X **12.19.1-release.0**. Les autres patchs Piko
-restent disponibles. Le code et le fichier NOTICE de Piko sont conservés.
+Fork de [Piko](https://github.com/crimera/piko), patch **Fold landscape 4:3 layout**.
+Version cible : **X 12.19.1-release.0 en APKM original**.
 
 ## Installer avec Morphe
 
-1. Ajouter [Piko Fold à Morphe](https://morphe.software/add-source?github=senor-roboto/piko-fold).
-2. Utiliser l’APKM original X 12.19.1-release.0, sans le convertir en APK.
+1. Ajouter ou actualiser [la source Piko Fold](https://morphe.software/add-source?github=senor-roboto/piko-fold).
+2. Repartir de l’APKM original X 12.19.1-release.0.
 3. Activer **Fold landscape 4:3 layout**, puis les autres patchs Piko souhaités.
-   Ses dépendances incluent les réglages Piko et le blocage de la redirection vers X Lite.
-4. Appliquer les patchs et installer. Utiliser cette source pour les patchs Piko.
-5. Ouvrir X sur l’écran interne en paysage. Dans les réglages Piko, ouvrir
-   **Fold landscape 4:3** pour désactiver le mode, le rail ou choisir la largeur de lecture.
+4. Patcher et installer. Ouvrir **Piko → Fold paysage 4:3**.
+5. Relancer X après avoir modifié le mode complet ou la juxtaposition des messages.
 
-La signature change quand on patche une application : une installation X officielle
-peut devoir être désinstallée avant d’installer la version patchée. Morphe conserve
-sa clé de signature pour les mises à jour suivantes.
+Morphe conserve sa clé de signature pour les mises à jour. Une installation officielle
+peut devoir être désinstallée si sa signature diffère de celle de l’application patchée.
 
-## Comportement de la v2
+## Écrans et comportement
 
-- **Paysage 4:3 uniquement** : largeur d’au moins 600 dp, hauteur d’au moins 480 dp,
-  largeur supérieure à la hauteur, ratio entre 1,25 et 1,45. Cette petite tolérance
-  prend en compte les barres système et les variations autour de 4:3.
-- **Navigation latérale native** : le rail reproduit les vrais onglets configurés
-  par X/Piko et transmet clics et appuis longs aux contrôles d’origine. Icônes,
-  sélection et badges proviennent des vues natives. Les docks audio restent en bas.
-  Si la structure des onglets n’est pas reconnue, la barre d’origine est conservée.
-  Le rail mesure 64 dp, ses boutons 56 dp et leur sélection est une capsule de 48 dp.
-  Il tient compte des barres système sans doubler les marges du décor natif.
-  Son emplacement reste constant pendant les transitions entre onglets.
-- **Deux panneaux natifs** : dans une fenêtre cible large d’au moins 768 dp,
-  ouvrir un post depuis le fil, la recherche, un profil ou les favoris conserve
-  l’écran d’origine à gauche et ouvre la conversation à droite. Profils et messages
-  classiques peuvent également servir de détails. Ce sont de véritables Activities X,
-  avec leurs fragments, réponses, listes, médias, états et navigation Retour.
-  Un nouveau post ouvert depuis le panneau principal remplace le détail précédent.
-  Le partage initial est 50:50, pour laisser au moins 320 dp au fil après son rail.
-  Les OEM récents peuvent afficher un séparateur déplaçable et permettre de tirer
-  un panneau vers le plein écran. Sans ces API, le partage reste fixe.
-- **Lecture** : la colonne est centrée, limitée à 640 dp par défaut (réglable entre
-  480 et 840 dp). Elle concerne accueil, profils, recherche, détails de posts,
-  favoris, messages classiques et réglages X.
-- **Marges tablette** : les marges natives de 120 dp de chaque côté des listes
-  classiques sont désactivées dans le mode cible pour éviter une double marge.
-- **Portrait et autres ratios** : le wrapper reprend les dimensions d’origine,
-  la navigation du bas est restaurée. Il ne force aucune orientation.
-- **Clavier et redimensionnement** : les dimensions de la fenêtre, plutôt que la
-  hauteur momentanément réduite par le clavier, déterminent l’activation sur Android 11+.
-- **Médias, caméra, connexion et composition** : les activités correspondantes
-  gardent leur interface native. X Lite et son XChat ne sont pas adaptés par ce patch.
+| Écran | Adaptation |
+| --- | --- |
+| Accueil | Rail natif compact de 64 dp, sélection arrondie, badges, position stable sous les barres système |
+| Post détaillé | Post à gauche (46 %), réponses à droite (54 %), défilements indépendants, champ de réponse à droite |
+| Messages classiques | Liste à gauche, conversation à droite via Activity Embedding, y compris depuis l’onglet messages de l’accueil |
+| XChat intégré | Fondu natif sans le zoom de la pile ; disposition Compose native |
+| Profils, recherche, favoris, réglages | Colonne de lecture centrée, largeur réglable et marges de listes adaptées |
+| Médias, caméra, connexion, composition | Écrans natifs en pleine fenêtre |
 
-Les deux panneaux utilisent la bibliothèque système optionnelle `androidx.window.extensions`
-déjà déclarée par X. Le patch active les propriétés de manifeste nécessaires et
-enregistre ses règles dans le composant public Activity Embedding. Il ne remplace
-pas les bibliothèques AndroidX de X. Le support dépend du logiciel du téléphone,
-pas de son nom commercial : Android 12+ ne garantit pas à lui seul la présence du composant.
-Les réglages affichent si la prise en charge a été détectée et la largeur de la fenêtre.
-Sans composant compatible ou sous 768 dp, la navigation classique à une colonne reste disponible.
+Les colonnes nécessitent une largeur d’au moins **768 dp** dans le format cible.
+Le mode cible exige au moins 600 × 480 dp, une largeur supérieure à la hauteur,
+et un ratio entre 1,25 et 1,45 pour absorber les barres système autour de 4:3.
+Le portrait, les autres ratios et les petites fenêtres reprennent leur disposition native.
+La hauteur réduite par le clavier ne désactive pas le mode sur Android 11+.
 
-Le patch intervient sur les vues de l’application installée, sans page web embarquée
-ni données simulées. Les règles de juxtaposition ne s’appliquent qu’au paysage 4:3.
+Le post et ses réponses sont rendus par les vues natives de X et le même adaptateur
+de données. Le post n’est pas une capture d’écran : ses boutons, liens et médias
+utilisent les liaisons natives. Le RecyclerView des réponses conserve ses identifiants,
+son contrôleur et les positions originales de ses éléments. Les ancêtres et le post
+deviennent des cellules sans hauteur dans cette colonne, pour éviter les doublons.
+Le post est identifié par son tag natif exact et suivi par son identifiant stable.
+Si le post n’est pas reconnu ou disparaît des données, l’affichage d’origine sert de repli.
+Aucune nouvelle bibliothèque RecyclerView ou Compose n’est ajoutée à l’APK.
 
-Les réglages de largeur et de rail s’appliquent au retour à l’écran. Après avoir
-activé/désactivé le mode complet, relancer X pour réévaluer aussi les marges natives
-des écrans déjà ouverts. Relancer également X après avoir modifié les deux panneaux.
+Les messages classiques utilisent la bibliothèque système optionnelle
+`androidx.window.extensions`, déjà déclarée par X. Le partage initial est 50:50.
+Un séparateur système permet éventuellement de le modifier selon les API OEM.
+Les règles sont limitées à RootDMActivity → DMActivity, ou MainActivity → DMActivity
+avec une boîte de réception sélectionnée. Le support dépend du système et est indiqué
+dans les réglages. Les colonnes de post ne dépendent pas de ce composant.
 
-## Validation et essai sur téléphone
+Le nouveau XChat intégré utilise une pile Compose/Decompose dans MainActivity,
+sans DMActivity. Il ne bénéficie pas encore de la juxtaposition liste/conversation.
+Son option de mouvements réduits remplace le composite fondu + zoom de X par le fondu
+déjà livré avec l’application, tout en conservant le moteur de navigation.
+X Lite reste exclu par la dépendance Piko correspondante.
 
-Les tests automatiques vérifient la géométrie, la conservation des vues et de leurs
-identifiants, les clics natifs du rail, le rétablissement de la barre du bas,
-la désactivation et les limites de largeur. Les tests Android couvrent les API 28 et 35.
-Un test graphique vérifie le centrage sans réduction des icônes, la conservation
-des badges et le découpage du fond. Les tests de transition masquent la barre native
-et simulent une écriture de sa hauteur ; la largeur et la position du fil restent stables.
-Les règles testent les paires d’écrans, les exclusions et les formats non admissibles.
-Le workflow compile le bundle Morphe et publie les résultats des tests.
-L’APKM original X 12.19.1-release.0 a été patché avec Morphe Desktop : application
-du patch, reconstruction des DEX et ressources, puis signature de l’APK réussies.
+## Réglages
 
-Pour l’essai sur Fold : accueil → recherche → notifications → messages → profil →
-post détaillé → favoris, puis ouvrir une image/vidéo, afficher le clavier,
-passer en portrait et revenir en paysage, tester une petite fenêtre et les thèmes clair/sombre.
-La validation physique reste distincte des tests automatiques.
-La juxtaposition, le séparateur OEM et les animations système doivent être vérifiés
-sur le téléphone ; Robolectric ne fournit pas le composant du constructeur.
+- **Activer la disposition Fold** : toutes les adaptations, paysage 4:3 uniquement.
+- **Navigation latérale** : rail compact avec les onglets natifs configurés par X/Piko.
+- **Messages à deux panneaux** : juxtaposition des écrans de messagerie classique.
+- **Post et réponses côte à côte** : disposition du détail de post, indépendante du support OEM.
+- **Réduire les mouvements de XChat** : fondu sans zoom, uniquement dans le tchat et le format cible.
+- **Largeur de lecture** : colonne unique, 640 dp par défaut, réglable de 480 à 840 dp.
+
+## Validation
+
+Le workflow compile le bundle et exécute les contrôles de géométrie et les tests Android.
+Ces derniers couvrent le rail, le rendu de ses icônes, la restauration des vues,
+la projection des données, les identifiants après insertion, les actions natives des
+réponses et la restitution du RecyclerView original. Les nouveaux tests de listes
+utilisent des adaptateurs de test et l’ABI de la version cible, pas l’intégralité de X.
+Le patchage, la reconstruction et la signature sont également vérifiés sur l’APKM réel.
+Les références RecyclerView de l’extension sont comparées aux méthodes et champs du DEX cible.
+
+Il reste à essayer sur téléphone : ouvrir un post court puis long, une citation, un fil,
+faire défiler les réponses et charger la suite, aimer/enregistrer/répondre, ouvrir les médias,
+afficher le clavier, changer le tri, passer en portrait et revenir, désactiver les colonnes.
+Tester également le tchat, les messages classiques, le thème clair/sombre et une petite fenêtre.
+Les tests automatiques ne confirment pas le rendu et les gestes OEM sur un Fold réel.
 
 ## Développement
 
-Le workflow `.github/workflows/fold.yml` construit la branche de travail. Sur `main`,
-il publie une release `.mpp`, la liste des patchs et les métadonnées Morphe.
-Le jeton éphémère GitHub Actions sert à lire les dépendances Morphe sur GitHub Packages.
-Aucun APK X, compte utilisateur ou clé privée n’est publié dans le dépôt.
-
-Build : `./gradlew buildAndroid`. Tests : `./gradlew :extensions:twitter:testDebugUnitTest`.
-Les dépendances Morphe nécessitent une authentification GitHub Packages pour une compilation locale.
-
-Le nom du modèle du téléphone ne conditionne pas le patch : la fenêtre réelle
-détermine le comportement, y compris en mode multi-fenêtre.
+`./gradlew buildAndroid :patches:generatePatchesList` ;
+`./gradlew :extensions:twitter:testDebugUnitTest`.
+Les dépendances Morphe nécessitent GitHub Packages ; le workflow utilise son jeton éphémère.
+Aucun APK X, compte, capture personnelle ou clé de signature n’est publié dans ce dépôt.
+Code GPLv3, NOTICE et README amont conservés.

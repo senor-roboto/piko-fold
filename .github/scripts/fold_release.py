@@ -17,9 +17,9 @@ bundle = bundles[0]
 assert "Fold landscape 4:3 layout" in (root / "patches-list.json").read_text(encoding="utf-8")
 metadata = {
     "created_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
-    "description": "Piko Fold : rail stable, lecture adaptée et ouverture de posts en deux panneaux natifs en paysage 4:3. "
+    "description": "Piko Fold : post à gauche, réponses à droite, rail stable et messages classiques à deux panneaux en paysage 4:3. "
                    "X 12.19.1-release.0. Sélectionner Fold landscape 4:3 layout. "
-                   "Fork de crimera/piko ; deux panneaux selon le support du système.",
+                   "Fork de crimera/piko ; XChat avec mouvements réduits. Juxtaposition des messages selon le support système.",
     "download_url": f"https://github.com/{repository}/releases/download/v{version}/{bundle.name}",
     "version": version,
 }

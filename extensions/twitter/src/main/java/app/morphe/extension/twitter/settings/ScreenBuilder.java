@@ -166,6 +166,10 @@ public class ScreenBuilder {
                         + " " + String.format(str("piko_fold_window_width"),
                                 context.getResources().getConfiguration().screenWidthDp),
                 Settings.FOLD_TWO_PANES));
+        addPreference(category, helper.switchPreference(str("piko_fold_tweet_panels"),
+                str("piko_fold_tweet_panels_desc"), Settings.FOLD_TWEET_PANELS));
+        addPreference(category, helper.switchPreference(str("piko_fold_reduce_chat_motion"),
+                str("piko_fold_reduce_chat_motion_desc"), Settings.FOLD_REDUCE_CHAT_MOTION));
         addPreference(category, helper.editTextNumPreference(str("piko_fold_width"),
                 str("piko_fold_width_desc"), Settings.FOLD_READING_WIDTH));
     }
